@@ -23,7 +23,7 @@ Route::middleware('auth:sanctum')->group(function() {
     });
 
     Route::prefix("tasks")->middleware('role:Admin')->group(function() {
-        Route::delete('removeTask', [TaskController::class, 'remove'])->name('tasks.remove');
+        Route::delete('removeTask/{task_id}', [TaskController::class, 'remove'])->name('tasks.remove');
         Route::get("getTasks", [TaskController::class, 'read'])->name('tasks.read');
     });
 

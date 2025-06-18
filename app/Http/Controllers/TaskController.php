@@ -139,17 +139,20 @@ class TaskController extends Controller
         DB::beginTransaction();
         try {
             $task = Task::findOrFail($task_id);
+            $user_id = $task->user_id;
 
             $task->delete();
-            DB::commit();
 
+            Cache::forget("user_{$user_id}_tasks");
+            Cache::forget("all_tasks");
+
+            DB::commit();
             return response()->json(['message' => 'Task deleted sucessfully!'], 200);
         } catch (ModelNotFoundException $e) {
             DB::rollback();
             Log::error("Failed deleting task", [
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-                'request_data' => $request->all()
+                'trace' => $e->getTraceAsString()
             ]);
             return response()->json([
                 'message' => 'Failed to delete task. Please try again.',
